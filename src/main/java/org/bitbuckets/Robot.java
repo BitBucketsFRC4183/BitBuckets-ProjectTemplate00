@@ -11,6 +11,7 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
+import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
@@ -57,12 +58,16 @@ public class Robot extends TimedRobot {
         super.teleopPeriodic();
         double forwardSpeed = joystick.getRawAxis(0);
         double rotationSpeed = joystick.getRawAxis(4);
-        differentialDrive.arcadeDrive(forwardSpeed, rotationSpeed);
-        double feed = ff.calculate(forwardSpeed);
         ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(forwardSpeed, 0.0, rotationSpeed, new Rotation2d());
-        kinematics.toWheelSpeeds(speeds);
+        double leftSpeeds = kinematics.toWheelSpeeds(speeds).leftMetersPerSecond;
+        double rightSpeeds = kinematics.toWheelSpeeds(speeds).rightMetersPerSecond;
+        double leftFF = ff.calculate(leftSpeeds);
+        double rightFF = ff.calculate(rightSpeeds);
+        talonFX1.setVoltage(leftFF);
+        talonFX2.setVoltage(rightFF);
 
-        leftSpeed = feed +
+
+
 
 
     }
