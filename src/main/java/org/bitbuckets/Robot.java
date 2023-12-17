@@ -14,6 +14,7 @@ import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
@@ -27,7 +28,7 @@ public class Robot extends TimedRobot {
     PIDController pid;
     DifferentialDrive differentialDrive;
     DifferentialDriveKinematics kinematics;
-    Joystick joystick;
+    XboxController joystick;
 
     double ks = 0.65292;
     double kv = 2.3053;
@@ -42,7 +43,7 @@ public class Robot extends TimedRobot {
         talonFX1 = new WPI_TalonFX(1);
         talonFX2 = new WPI_TalonFX(2);
         differentialDrive = new DifferentialDrive(talonFX1, talonFX2);
-        joystick = new Joystick(0);
+        joystick = new XboxController(0);
         kinematics = new DifferentialDriveKinematics(12);
         ff = new SimpleMotorFeedforward(ks,kv,0.37626);
         pid = new PIDController(kp, ki, kd);
@@ -56,8 +57,8 @@ public class Robot extends TimedRobot {
         super.teleopPeriodic();
 
         //SETTING WHEELS SPEEDS TO JOYSTICK AXES
-        double forwardSpeed = joystick.getRawAxis(1);
-        double rotationSpeed = joystick.getRawAxis(4);
+        double forwardSpeed = joystick.getLeftY();
+        double rotationSpeed = joystick.getRightY();
 
         //GETTING WHEEL SPEEDS FROM CHASSIS SPEEDS
         ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(forwardSpeed, 0.0, rotationSpeed, new Rotation2d());
