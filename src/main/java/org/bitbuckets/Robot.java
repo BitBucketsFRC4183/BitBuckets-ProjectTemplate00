@@ -30,8 +30,8 @@ public class Robot extends TimedRobot {
     ChassisSpeeds chassisSpeeds;
     Joystick joystick;
 
-    double ks = 0;
-    double kv = 0;
+    double ks = 0.65292;
+    double kv = 2.3053;
     double kp = 0;
     double ki = 0;
     double kd = 0;
@@ -45,7 +45,7 @@ public class Robot extends TimedRobot {
         differentialDrive = new DifferentialDrive(talonFX1, talonFX2);
         joystick = new Joystick(0);
         kinematics = new DifferentialDriveKinematics(12);
-        ff = new SimpleMotorFeedforward(ks,kv);
+        ff = new SimpleMotorFeedforward(ks,kv,0.37626);
         pid = new PIDController(kp, ki, kd);
         chassisSpeeds = new ChassisSpeeds();
 
@@ -56,13 +56,21 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopPeriodic() {
         super.teleopPeriodic();
+
+        //SETTING WHEELS SPEEDS TO JOYSTICK AXES
         double forwardSpeed = joystick.getRawAxis(0);
         double rotationSpeed = joystick.getRawAxis(4);
+
+        //GETTING WHEEL SPEEDS FROM CHASSIS SPEEDS
         ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(forwardSpeed, 0.0, rotationSpeed, new Rotation2d());
         double leftSpeeds = kinematics.toWheelSpeeds(speeds).leftMetersPerSecond;
         double rightSpeeds = kinematics.toWheelSpeeds(speeds).rightMetersPerSecond;
+
+        //CALC FF FROM WHEELS SPEEDS
         double leftFF = ff.calculate(leftSpeeds);
         double rightFF = ff.calculate(rightSpeeds);
+
+        //SET THE CALC VOLTAGE FOR EACH MOTOR CONTROLLER
         talonFX1.setVoltage(leftFF);
         talonFX2.setVoltage(rightFF);
 
