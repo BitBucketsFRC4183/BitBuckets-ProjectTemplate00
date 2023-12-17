@@ -56,7 +56,7 @@ public class Robot extends TimedRobot {
         super.teleopPeriodic();
 
         //SETTING WHEELS SPEEDS TO JOYSTICK AXES
-        double forwardSpeed = joystick.getRawAxis(0);
+        double forwardSpeed = joystick.getRawAxis(1);
         double rotationSpeed = joystick.getRawAxis(4);
 
         //GETTING WHEEL SPEEDS FROM CHASSIS SPEEDS
