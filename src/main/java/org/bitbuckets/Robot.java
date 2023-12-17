@@ -58,7 +58,7 @@ public class Robot extends TimedRobot {
 
         //SETTING WHEELS SPEEDS TO JOYSTICK AXES
         double forwardSpeed = joystick.getLeftY();
-        double rotationSpeed = joystick.getRightY();
+        double rotationSpeed = joystick.getRightX();
 
         //GETTING WHEEL SPEEDS FROM CHASSIS SPEEDS
         ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(forwardSpeed, 0.0, rotationSpeed, new Rotation2d());
