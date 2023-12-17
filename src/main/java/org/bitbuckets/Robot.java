@@ -26,7 +26,6 @@ public class Robot extends TimedRobot {
 
     SimpleMotorFeedforward ff;
     PIDController pid;
-    DifferentialDrive differentialDrive;
     DifferentialDriveKinematics kinematics;
     XboxController joystick;
 
@@ -41,10 +40,10 @@ public class Robot extends TimedRobot {
     public void robotInit() {
         super.robotInit();
         talonFX1 = new WPI_TalonFX(1);
+        talonFX1.setInverted(true);
         talonFX2 = new WPI_TalonFX(2);
-        differentialDrive = new DifferentialDrive(talonFX1, talonFX2);
         joystick = new XboxController(0);
-        kinematics = new DifferentialDriveKinematics(12);
+        kinematics = new DifferentialDriveKinematics(0.55);
         ff = new SimpleMotorFeedforward(ks,kv,0.37626);
         pid = new PIDController(kp, ki, kd);
 
