@@ -27,7 +27,6 @@ public class Robot extends TimedRobot {
     PIDController pid;
     DifferentialDrive differentialDrive;
     DifferentialDriveKinematics kinematics;
-    ChassisSpeeds chassisSpeeds;
     Joystick joystick;
 
     double ks = 0.65292;
@@ -41,13 +40,12 @@ public class Robot extends TimedRobot {
     public void robotInit() {
         super.robotInit();
         talonFX1 = new WPI_TalonFX(1);
-        talonFX2 = new WPI_TalonFX(17);
+        talonFX2 = new WPI_TalonFX(2);
         differentialDrive = new DifferentialDrive(talonFX1, talonFX2);
         joystick = new Joystick(0);
         kinematics = new DifferentialDriveKinematics(12);
         ff = new SimpleMotorFeedforward(ks,kv,0.37626);
         pid = new PIDController(kp, ki, kd);
-        chassisSpeeds = new ChassisSpeeds();
 
 
 
