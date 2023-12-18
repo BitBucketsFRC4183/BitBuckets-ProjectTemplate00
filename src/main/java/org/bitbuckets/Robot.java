@@ -1,80 +1,53 @@
 package org.bitbuckets;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
-import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import edu.wpi.first.wpilibj.motorcontrol.MotorController;
-import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import org.bitbuckets.commands.CircleCommand;
+
+import static org.bitbuckets.DriveSubsystem.ks;
+import static org.bitbuckets.DriveSubsystem.kv;
 
 public class Robot extends TimedRobot {
-    WPI_TalonFX talonFX1;
-    WPI_TalonFX talonFX2;
 
 
-    SimpleMotorFeedforward ff;
-    PIDController pid;
-    DifferentialDriveKinematics kinematics;
-    XboxController joystick;
-
-    double ks = 0.65292;
-    double kv = 2.3053;
-    double kp = 0;
-    double ki = 0;
-    double kd = 0;
+    DriveSubsystem driveSubsystem;
 
 
     @Override
     public void robotInit() {
         super.robotInit();
-        talonFX1 = new WPI_TalonFX(1);
+        WPI_TalonFX talonFX1 = new WPI_TalonFX(1);
         talonFX1.setInverted(true);
-        talonFX2 = new WPI_TalonFX(2);
-        joystick = new XboxController(0);
-        kinematics = new DifferentialDriveKinematics(0.55);
-        ff = new SimpleMotorFeedforward(ks,kv,0.37626);
-        pid = new PIDController(kp, ki, kd);
+        WPI_TalonFX talonFX2 = new WPI_TalonFX(2);
+        XboxController joystick = new XboxController(0);
+        DifferentialDriveKinematics kinematics = new DifferentialDriveKinematics(0.55);
+        SimpleMotorFeedforward ff = new SimpleMotorFeedforward(ks,kv,0.97626);
+
+       driveSubsystem =  new DriveSubsystem(talonFX1, talonFX2, ff, kinematics, joystick);
 
 
 
     }
 
     @Override
-    public void teleopPeriodic() {
-        super.teleopPeriodic();
-
-        //SETTING WHEELS SPEEDS TO JOYSTICK AXES
-        double forwardSpeed = joystick.getLeftY();
-        double rotationSpeed = joystick.getRightX();
-
-        //GETTING WHEEL SPEEDS FROM CHASSIS SPEEDS
-        ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(forwardSpeed, 0.0, rotationSpeed, new Rotation2d());
-        double leftSpeeds = kinematics.toWheelSpeeds(speeds).leftMetersPerSecond;
-        double rightSpeeds = kinematics.toWheelSpeeds(speeds).rightMetersPerSecond;
-
-        //CALC FF FROM WHEELS SPEEDS
-        double leftFF = ff.calculate(leftSpeeds);
-        double rightFF = ff.calculate(rightSpeeds);
-
-        //SET THE CALC VOLTAGE FOR EACH MOTOR CONTROLLER
-        talonFX1.setVoltage(leftFF);
-        talonFX2.setVoltage(rightFF);
-
-
-
-
-
+    public void autonomousInit() {
+        CommandScheduler.getInstance().schedule(new CircleCommand(driveSubsystem));
     }
+
+    @Override
+    public void robotPeriodic() {
+        CommandScheduler.getInstance().run();
+    }
+
+    @Override
+    public void teleopPeriodic() {
+        driveSubsystem.ourTeleopPeriod();
+    }
+
+
+
 }
